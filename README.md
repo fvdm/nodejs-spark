@@ -63,12 +63,14 @@ The first parameter `err` is `null` when all went fine, otherwise it is an `inst
 
 ### Errors
 
-  request failed    The HTTPS request had an error, see err.error.
-  request timeout   The HTTPS request took too long.
-  request dropped   The remote host disconnected too early, no data processed.
-  api invalid       The API returned unreadable data.
-  api error         The API returned an error, see err.code, err.error and err.error_description.
-  action failed     A method specific error occured, it returned the code -1.
+```
+request failed    The HTTPS request had an error, see err.error.
+request timeout   The HTTPS request took too long.
+request dropped   The remote host disconnected too early, no data processed.
+api invalid       The API returned unreadable data.
+api error         The API returned an error, see err.code, err.error and err.error_description.
+action failed     A method specific error occured, it returned the code -1.
+```
 
 
 devices ( callback )
