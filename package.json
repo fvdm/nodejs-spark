@@ -1,0 +1,29 @@
+{
+  "author": {
+    "name":               "Franklin van de Meent",
+    "email":              "fr@nkl.in",
+    "url":                "https://frankl.in"
+  },
+  "name":                 "sparkcore",
+  "description":          "Read and control Spark.io cores with node.js",
+  "version":              "0.2.0",
+  "repository": {
+    "type":               "git",
+    "url":                "git://github.com/fvdm/nodejs-spark.git"
+  },
+  "bugs": {
+    "url":                "https://github.com/fvdm/nodejs-spark/issues"
+  },
+  "main":                 "spark.js",
+  "dependencies":         {},
+  "devDependencies":      {},
+  "optionalDependencies": {},
+  "engines": {
+    "node":               "*"
+  },
+  "keywords":             ["spark", "spark.io", "sparkcore", "api"],
+  "license": {
+    "type":               "Public Domain",
+    "url":                "https://github.com/fvdm/nodejs-spark/raw/master/LICENSE"
+  }
+}
