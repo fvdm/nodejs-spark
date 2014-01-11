@@ -37,22 +37,6 @@ app.device = function( device ) {
 				var vars = {}
 			}
 			talk( 'POST', 'devices/'+ device +'/'+ func, vars, callback )
-		},
-		
-		digitalWrite: function( pin, value, callback ) {
-			talk( 'POST', 'devices/'+ device +'/digitalWrite', {params: pin +','+ value}, callback )
-		},
-		
-		analogWrite: function( pin, value, callback ) {
-			talk( 'POST', 'devices/'+ device +'/analogWrite', {params: pin +','+ value}, callback )
-		},
-		
-		digitalRead: function( pin, callback ) {
-			talk( 'POST', 'devices/'+ device +'/digitalRead', {params: pin}, callback )
-		},
-		
-		analogRead: function( pin, callback ) {
-			talk( 'POST', 'devices/'+ device +'/analogRead', {params: pin}, callback )
 		}
 	}
 }
