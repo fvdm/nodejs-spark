@@ -77,7 +77,7 @@ function talk( method, path, vars, callback ) {
 		path: '/v1/'+ path,
 		method: method,
 		headers: {
-			'User-Agent': 'sparkio.js/0.2.0 (https://frankl.in)'
+			'User-Agent': 'spark.js/0.2.0 (https://github.com/fvdm/nodejs-spark)'
 		}
 	}
 	
