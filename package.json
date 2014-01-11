@@ -4,7 +4,7 @@
     "email":              "fr@nkl.in",
     "url":                "https://frankl.in"
   },
-  "name":                 "sparkcore",
+  "name":                 "sparkcloud",
   "description":          "Read and control Spark.io cores with node.js",
   "version":              "0.2.0",
   "repository": {
@@ -21,7 +21,7 @@
   "engines": {
     "node":               "*"
   },
-  "keywords":             ["spark", "spark.io", "sparkcore", "api"],
+  "keywords":             ["spark", "spark.io", "sparkcore", "sparkcloud", "api"],
   "license": {
     "type":               "Public Domain",
     "url":                "https://github.com/fvdm/nodejs-spark/raw/master/LICENSE"
