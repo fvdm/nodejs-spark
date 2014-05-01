@@ -52,7 +52,22 @@ app.accessToken.list = function( callback ) {
 	})
 }
 
+app.accessToken.generate = function( cb ) {
+	if( auth.username && auth.password ) {
+		var vars = {
+			grant_type: 'password',
+			username: auth.username,
+			password: auth.password
 		}
+		talk({
+			method: 'POST',
+			path: 'oauth/token',
+			body: vars,
+			auth: true,
+			callback: cb
+		})
+	} else {
+		cb( new Error('no credentials') )
 	}
 }
 
