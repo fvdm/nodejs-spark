@@ -41,12 +41,21 @@ app.device = function( device ) {
 			talk({ path: 'devices/'+ device +'/'+ variable, callback: cb })
 		},
 		
-		func: function( func, vars, callback ) {
-			if( typeof vars === 'function' ) {
-				var callback = vars
-				var vars = {}
+		func: function( func, arg, cb ) {
+			if( typeof arg === 'function' ) {
+				var cb = arg
+				var vars = null
+			} else if( typeof arg === 'string' || typeof arg === 'numeric' ) {
+				var vars = {args: arg}
 			}
-			talk( 'POST', 'devices/'+ device +'/'+ func, vars, callback )
+			
+			talk({
+				method: 'POST',
+				path: 'devices/'+ device +'/'+ func,
+				body: vars,
+				callback: cb
+			})
+		}
 
 // List or generate access_token
 app.accessToken = {}
