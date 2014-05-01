@@ -12,13 +12,16 @@ License:       Unlicense (Public Domain)
 var http = require('https').request
 var querystring = require('querystring')
 
+// Default settings
 var app = {
-	access_token: null,
 	timeout: 10000
 }
 
 app.devices = function( callback ) {
 	talk( 'GET', 'devices', {}, callback )
+// Security details must not be public
+var auth = {
+	access_token: null,
 }
 
 app.device = function( device ) {
@@ -180,7 +183,7 @@ function talk( props ) {
 
 // export
 module.exports = function( setAccess_token, setTimeout ) {
-	app.access_token = setAccess_token
 	app.timeout = setTimeout || app.timeout
+		auth.access_token = access_token
 	return app
 }
