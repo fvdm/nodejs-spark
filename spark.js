@@ -42,41 +42,76 @@ app.device = function( device ) {
 }
 
 // Communicate
-function talk( method, path, vars, callback ) {
+// method      GET POST PUT DELETE    GET
+// path        method path            /
+// query       query fields           {}
+// body        body fields or data
+// callback    function( err, data )
+// auth        use username:password  [from module setup]
+// contentType change Content-Type    !GET: application/x-www-form-urlencoded
+// userAgent   change User-Agent
+// headers     custom headers         {}
+// timeout     override timeout ms    10000
+
+function talk( props ) {
 	// prevent multiple callbacks
 	var complete = false
 	function doCallback( err, res ) {
 		if( !complete ) {
 			complete = true
-			callback( err || null, res || null )
+			props.callback( err || null, res || null )
 		}
 	}
 	
 	// build request
-	vars.access_token = app.access_token
-	var query = querystring.stringify( vars )
-	
 	var options = {
 		hostname: 'api.spark.io',
-		path: '/v1/'+ path,
-		method: method,
+		path: '/v1/'+ props.path,
+		method: props.method || 'GET',
 		headers: {
-			'User-Agent': 'spark.js/0.2.0 (https://github.com/fvdm/nodejs-spark)'
+			'User-Agent': props.userAgent || 'spark.js (https://github.com/fvdm/nodejs-spark)'
 		}
 	}
 	
-	if( method === 'GET' ) {
-		options.path += '?'+ query
+	// http basic auth
+	if( props.auth && (!auth.username || !auth.password) ) {
+		doCallback( new Error('no credentials') )
+		return
+	} else if( props.auth ) {
+		options.auth = auth.username +':'+ auth.password
 	} else {
-		options.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-		options.headers['Content-Length'] = query.length
+		options.headers.Authorization = 'Bearer '+ auth.access_token
 	}
 	
+	// stringify objects
+	var body = props.body || null
+	if( typeof body === 'object' ) {
+		body = querystring.stringify( props.body )
+	}
+	
+	if( typeof props.query === 'object' ) {
+		options.path += '?'+ querystring.stringify( props.query )
+	}
+	
+	// default POST headers
+	if( props.method !== 'GET' && body ) {
+		options.headers['Content-Type'] = props.contentType || 'application/x-www-form-urlencoded'
+		options.headers['Content-Length'] = body.length
+	}
+	
+	// override headers
+	if( typeof props.headers === 'object' && Object.keys( props.headers ).length >= 1 ) {
+		for( var key in props.headers ) {
+			options.headers[ key ] = props.headers[ key ]
+		}
+	}
+	
+	// run
 	var request = http( options )
 	
 	// set timeout
 	request.on( 'socket', function( socket ) {
-		socket.setTimeout( app.timeout )
+		socket.setTimeout( props.timeout || app.timeout )
 		socket.on( 'timeout', function() {
 			request.abort()
 		})
@@ -136,8 +171,8 @@ function talk( method, path, vars, callback ) {
 	})
 	
 	// do it all
-	if( method === 'POST' ) {
-		request.end( query )
+	if( props.method !== 'GET' ) {
+		request.end( body )
 	} else {
 		request.end()
 	}
