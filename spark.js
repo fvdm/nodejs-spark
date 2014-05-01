@@ -56,6 +56,8 @@ app.device = function( device ) {
 				callback: cb
 			})
 		}
+	}
+}
 
 // List or generate access_token
 app.accessToken = {}
