@@ -182,8 +182,8 @@ function talk( props ) {
 }
 
 // export
-module.exports = function( setAccess_token, setTimeout ) {
-	app.timeout = setTimeout || app.timeout
+module.exports = function( access_token, timeout ) {
 		auth.access_token = access_token
+	app.timeout = timeout || app.timeout
 	return app
 }
