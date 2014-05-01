@@ -17,8 +17,6 @@ var app = {
 	timeout: 10000
 }
 
-app.devices = function( callback ) {
-	talk( 'GET', 'devices', {}, callback )
 // Security details must not be public
 var auth = {
 	username: null,
@@ -27,6 +25,12 @@ var auth = {
 	access_token_expires: null
 }
 
+// List devices
+app.devices = function( cb ) {
+	talk({ path: 'devices', callback: cb })
+}
+
+// One device
 app.device = function( device ) {
 	return {
 		info: function( callback ) {
