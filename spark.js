@@ -33,12 +33,12 @@ app.devices = function( cb ) {
 // One device
 app.device = function( device ) {
 	return {
-		info: function( callback ) {
-			talk( 'GET', 'devices/'+ device, {}, callback )
+		info: function( cb ) {
+			talk({ path: 'devices/'+ device, callback: cb })
 		},
 		
-		variable: function( variable, callback ) {
-			talk( 'GET', 'devices/'+ device +'/'+ variable, {}, callback )
+		variable: function( variable, cb ) {
+			talk({ path: 'devices/'+ device +'/'+ variable, callback: cb })
 		},
 		
 		func: function( func, vars, callback ) {
