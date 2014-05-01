@@ -21,7 +21,10 @@ app.devices = function( callback ) {
 	talk( 'GET', 'devices', {}, callback )
 // Security details must not be public
 var auth = {
+	username: null,
+	password: null,
 	access_token: null,
+	access_token_expires: null
 }
 
 app.device = function( device ) {
@@ -218,8 +221,23 @@ function talk( props ) {
 }
 
 // export
+// either ( 'access_token_string', [1000] )
+// or ( {username: 'john', password: 'doe'}, [1000] )
 module.exports = function( access_token, timeout ) {
+	if( typeof access_token === 'object' ) {
+		auth.username = access_token.username
+		auth.password = access_token.password
+		
+		app.accessToken.generate( function( err, token ) {
+			if( !err ) {
+				auth.access_token = token.access_token
+				auth.access_token_expires = token.expires_in
+			}
+		})
+	} else {
 		auth.access_token = access_token
+	}
+	
 	app.timeout = timeout || app.timeout
 	return app
 }
