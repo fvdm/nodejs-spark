@@ -56,6 +56,15 @@ app.accessToken.list = function( callback ) {
 	}
 }
 
+app.accessToken.delete = function( token, cb ) {
+	talk({
+		method: 'DELETE',
+		path: 'access_tokens/'+ token,
+		auth: true,
+		callback: cb
+	})
+}
+
 // Communicate
 // method      GET POST PUT DELETE    GET
 // path        method path            /
