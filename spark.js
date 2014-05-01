@@ -9,6 +9,7 @@ License:       Unlicense (Public Domain)
                https://github.com/fvdm/nodejs-spark/blob/master/LICENSE
 */
 
+var fs = require('fs')
 var http = require('https').request
 var querystring = require('querystring')
 
@@ -55,6 +56,91 @@ app.device = function( device ) {
 				body: vars,
 				callback: cb
 			})
+		},
+		
+		flash: function( data, binary, cb ) {
+			if( typeof binary === 'function' ) {
+				var cb = binary
+				var binary = false
+			}
+			
+			function doneFlash( err, res ) {
+				if( err ) {
+					cb( err )
+				} else if( !res.ok ) {
+					var error = new Error('flash failed')
+					error.device = device
+					error.errors = res.errors || [res.error] || null
+					error.firmware_binary_id || null
+					error.output = res.output || null
+					cb( error )
+				} else {
+					cb( null, res )
+				}
+			}
+			
+			var boundary = '--'+ Date.now() +'--'
+			
+			var options = {
+				method: 'PUT',
+				path: 'devices/'+ device,
+				body: '',
+				headers: {'Content-Type': 'multipart/form-data; boundary='+ boundary},
+				callback: doneFlash
+			}
+			
+			if( typeof data === 'string' ) {
+				if( data.match( /^[~.]?\/\w+/ ) ) {
+					// path
+					if( !binary ) {
+						multi += boundary
+						multi += '\r\nContent-Disposition: form-data; name="file"; filename="source.txt"'
+						multi += '\r\nContent-Type: text/plain\r\n'
+						
+						fs.readFile( data, {encoding: 'string'}, function( err, file ) {
+							if( err ) {
+								cb( err )
+							} else {
+								multi += '\r\n'+ file
+								multi += '\r\n'+ boundary
+								
+								options.body = multi
+								talk( options )
+							}
+						})
+					} else {
+						multi += boundary
+						multi += '\r\nContent-Disposition: form-data; name="file_type"\r\n\r\nbinary'
+						
+						fs.readFile( data, {encoding: 'binary'}, function( err, file ) {
+							if( err ) {
+								cb( err )
+							} else {
+								// TODO!
+								milti += boundary
+								multi += '\r\nContent-Disposition: form-data; name="file" filename="firmware.bin"'
+								multi += '\r\nContent-Type: application/octet-stream'
+								multi += '\r\n\r\n'
+								multi += file
+								multi += '\r\n'+ boundary
+								
+								options.body = multi
+								talk( options )
+							}
+						})
+					}
+				} else {
+					// code
+					options.body += boundary
+					options.body += '\r\nContent-Disposition: form-data; name="file"; filename="source.txt"'
+					options.body += '\r\nContent-Type: text/plain\r\n'
+					options.body += '\r\n'+ data
+					options.body += '\r\n'+ boundary
+					
+					options.headers['Content-Length'] = options.body.length
+					talk( options )
+				}
+			}
 		}
 	}
 }
