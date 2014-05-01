@@ -40,6 +40,18 @@ app.device = function( device ) {
 				var vars = {}
 			}
 			talk( 'POST', 'devices/'+ device +'/'+ func, vars, callback )
+
+// List or generate access_token
+app.accessToken = {}
+
+app.accessToken.list = function( callback ) {
+	talk({
+		path: 'access_token',
+		auth: true,
+		callback: callback
+	})
+}
+
 		}
 	}
 }
