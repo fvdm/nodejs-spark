@@ -76,6 +76,18 @@ spark.devices (console.log);
 ```
 
 
+### Connect multiple cores
+
+```js
+var coffee = spark.device ('12345');
+var alarm = spark.device ('67890');
+
+// Make delicious coffee and wake me up after 5 min
+coffee.makeCoffee ();
+alarm.wakeMeUp (5);
+```
+
+
 device ( deviceId )
 -------------------
 
