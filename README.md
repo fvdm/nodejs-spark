@@ -76,18 +76,6 @@ spark.devices (console.log);
 ```
 
 
-### Connect multiple cores
-
-```js
-var coffee = spark.device ('12345');
-var alarm = spark.device ('67890');
-
-// Make delicious coffee and wake me up after 5 min
-coffee.makeCoffee ();
-alarm.wakeMeUp (5);
-```
-
-
 device ( deviceId )
 -------------------
 
@@ -98,6 +86,18 @@ var core = spark.device ('123456789');
 ```
 
 Returns device methods below, no callback.
+
+
+### Connect multiple cores
+
+```js
+var coffee = spark.device ('12345');
+var alarm = spark.device ('67890');
+
+// Make delicious coffee and wake me up after 5 min
+coffee.makeCoffee ();
+alarm.wakeMeUp (5);
+```
 
 
 device.info ( callback )
