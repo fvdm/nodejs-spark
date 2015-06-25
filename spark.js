@@ -63,8 +63,12 @@ app.device = function (device) {
         { headers: { Authorization: 'Bearer '+ auth.access_token }}
       );
       if (cbOpen) { es.onopen = cbOpen; }
-      if (cbMessage) { es.onmessage = cbMessage; }
       if (cbError) { es.onerror = cbError }
+      if (cbMessage) {
+        es.onmessage = function (ev) {
+          cbMessage (fixEvent (ev));
+        };
+      }
     }
   };
 };
@@ -88,8 +92,12 @@ app.events = function (cbMessage, cbError, cbOpen) {
     { headers: { Authorization: 'Bearer '+ auth.access_token }}
   );
   if (cbOpen) { es.onopen = cbOpen; }
-  if (cbMessage) { es.onmessage = cbMessage; }
   if (cbError) { es.onerror = cbError }
+  if (cbMessage) {
+    es.onmessage = function (ev) {
+      cbMessage (fixEvent (ev));
+    };
+  }
 };
 
 // List or generate access_token
@@ -212,6 +220,23 @@ function talk (props) {
     case 'GET':
     default: http.get (url, options, doResponse); break;
   }
+}
+
+// Fix events - it is impossible to overwrite ev.data without the for..loop
+function fixEvent (ev) {
+  var ev2 = {};
+  for (var key in ev) {
+    ev2 [key] = ev [key];
+  }
+  try {
+    ev2.data = JSON.parse (ev2.data);
+  }
+  catch (e) {}
+  try {
+    ev2.data.data = JSON.parse (ev2.data.data);
+  }
+  catch (e) {}
+  return ev2;
 }
 
 // export
