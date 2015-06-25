@@ -51,7 +51,7 @@ app.device = function (device) {
       talk ({
         method: 'POST',
         path: 'devices/'+ device +'/'+ func,
-        body: vars,
+        query: vars,
         callback: cb
       });
     }
