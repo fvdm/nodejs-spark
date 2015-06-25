@@ -135,10 +135,6 @@ function talk (props) {
         error.error = data.error;
         error.error_description = data.error_description;
       }
-    
-      if (data.return_value && data.return_value === -1) {
-        error = new Error ('action failed');
-      }
     }
 
     if (typeof props.callback === 'function') {
