@@ -16,7 +16,8 @@
   },
   "main":                 "spark.js",
   "dependencies": {
-    "httpreq":            "0.4.x"
+    "httpreq":            "0.4.x",
+    "eventsource":        "git://github.com/fvdm/eventsource-node.git#fvdm-patch-1"
   },
   "devDependencies":      {},
   "optionalDependencies": {},

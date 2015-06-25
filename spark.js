@@ -10,6 +10,7 @@ License:       Unlicense (Public Domain)
 */
 
 var http = require ('httpreq');
+var EventSource = require ('eventsource');
 
 // Default settings
 var app = {
@@ -54,6 +55,16 @@ app.device = function (device) {
         query: vars,
         callback: cb
       });
+    },
+
+    events: function (cbMessage, cbError, cbOpen) {
+      var es = new EventSource (
+        'https://api.particle.io/v1/devices/'+ device +'/events',
+        { headers: { Authorization: 'Bearer '+ auth.access_token }}
+      );
+      if (cbOpen) { es.onopen = cbOpen; }
+      if (cbMessage) { es.onmessage = cbMessage; }
+      if (cbError) { es.onerror = cbError }
     }
   };
 };
@@ -68,6 +79,17 @@ app.claimDevice = function (deviceId, cb) {
     },
     callback: cb
   });
+};
+
+// Account events
+app.events = function (cbMessage, cbError, cbOpen) {
+  var es = new EventSource (
+    'https://api.particle.io/v1/devices/events',
+    { headers: { Authorization: 'Bearer '+ auth.access_token }}
+  );
+  if (cbOpen) { es.onopen = cbOpen; }
+  if (cbMessage) { es.onmessage = cbMessage; }
+  if (cbError) { es.onerror = cbError }
 };
 
 // List or generate access_token
