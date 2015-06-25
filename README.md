@@ -201,7 +201,7 @@ var core = spark.device ('123456789');
 core.func ('led', console.log);
 
 // force on
-core.funct ('led', 'on', console.log);
+core.func ('led', 'on', console.log);
 ```
 
 Each time you run this script the **blue LED** next to the big RGB LED should switch on or off.
