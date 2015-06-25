@@ -9,8 +9,7 @@ License:       Unlicense (Public Domain)
                https://github.com/fvdm/nodejs-spark/blob/master/LICENSE
 */
 
-var http = require ('https') .request;
-var querystring = require ('querystring');
+var http = require ('httpreq');
 
 // Default settings
 var app = {
@@ -52,7 +51,7 @@ app.device = function (device) {
       talk ({
         method: 'POST',
         path: 'devices/'+ device +'/'+ func,
-        body: vars,
+        query: vars,
         callback: cb
       });
     }
@@ -104,30 +103,54 @@ app.accessToken.delete = function (token, cb) {
 // query       query fields           {}
 // body        body fields or data
 // callback    function( err, data )
-// auth        use username:password  [from module setup]
+// auth        use {username: 'john', password: 'doe'}
 // contentType change Content-Type    !GET: application/x-www-form-urlencoded
 // userAgent   change User-Agent
 // headers     custom headers         {}
 // timeout     override timeout ms    10000
 
 function talk (props) {
-  // prevent multiple callbacks
-  var complete = false;
-  function doCallback (err, res) {
-    if (!complete) {
-      complete = true;
-      props.callback (err || null, res || null);
+  // process response
+  function doResponse (err, res) {
+    var data = null;
+    var error = null;
+
+    if (err) {
+      error = new Error ('request failed');
+      error.error = err;
+    }
+
+    if (!err) {
+      try {
+        data = JSON.parse (res.body);
+      }
+      catch (e) {
+        error = new Error ('invalid response');
+        error.error = e;
+      }
+  
+      if (res.statusCode !== 200 && data && data.code) {
+        error = new Error ('api error');
+        error.code = data.code;
+        error.error = data.error;
+        error.error_description = data.error_description;
+      }
+    }
+
+    if (typeof props.callback === 'function') {
+      props.callback (error, data);
     }
   }
 
   // build request
+  var url = 'https://api.particle.io/v1/'+ props.path;
   var options = {
-    hostname: 'api.spark.io',
-    path: '/v1/'+ props.path,
-    method: props.method || 'GET',
+    parameters: props.query || {},
+    body: props.body || null,
     headers: {
       'User-Agent': props.userAgent || 'spark.js (https://github.com/fvdm/nodejs-spark)'
-    }
+    },
+    timeout: props.timeout || app.timeout
   };
 
   // http basic auth
@@ -140,22 +163,6 @@ function talk (props) {
     options.headers.Authorization = 'Bearer '+ auth.access_token;
   }
 
-  // stringify objects
-  var body = props.body || null;
-  if (typeof body === 'object') {
-    body = querystring.stringify (props.body);
-  }
-
-  if (typeof props.query === 'object') {
-    options.path += '?'+ querystring.stringify (props.query);
-  }
-
-  // default POST headers
-  if (props.method !== 'GET' && body) {
-    options.headers ['Content-Type'] = props.contentType || 'application/x-www-form-urlencoded';
-    options.headers ['Content-Length'] = body.length;
-  }
-
   // override headers
   if (typeof props.headers === 'object' && Object.keys (props.headers) .length >= 1) {
     for (var key in props.headers) {
@@ -164,73 +171,12 @@ function talk (props) {
   }
 
   // run
-  var request = http (options);
-
-  // set timeout
-  request.on ('socket', function (socket) {
-    socket.setTimeout (props.timeout || app.timeout);
-    socket.on ('timeout', function () {
-      request.abort ();
-    });
-  });
-
-  // process response
-  request.on ('response', function (response) {
-    var data = '';
-
-    response.on ('data', function (ch) {
-      data += ch;
-    });
-
-    // complete
-    response.on ('end', function () {
-      data = data.trim ();
-
-      try {
-        data = JSON.parse (data);
-      } catch (e) {
-        doCallback (new Error ('api invalid'));
-        return;
-      }
-
-      if (response.statusCode !== 200) {
-        var err = new Error ('api error');
-        err.code = data.code;
-        err.error = data.error;
-        err.error_description = data.error_description;
-        doCallback (err);
-        return;
-      }
-
-      if (data.return_value && data.return_value === -1) {
-        doCallback (new Error ('action failed'), data);
-        return;
-      } else {
-        doCallback (null, data);
-      }
-    });
-
-    // dropped
-    response.on ('close', function () {
-      doCallback (new Error ('request dropped'));
-    });
-  });
-
-  // fail
-  request.on ('error', function (error) {
-    var err = new Error ('request failed');
-    if (error.code === 'ECONNRESET') {
-      err = new Error ('request timeout');
-    }
-    err.error = error;
-    doCallback (err);
-  });
-
-  // do it all
-  if (props.method !== 'GET') {
-    request.end (body);
-  } else {
-    request.end ();
+  switch (props.method) {
+    case 'POST': http.post (url, options, doResponse); break;
+    case 'PUT': http.put (url, options, doResponse); break;
+    case 'DELETE': http.delete (url, options, doResponse); break;
+    case 'GET':
+    default: http.get (url, options, doResponse); break;
   }
 }
 
