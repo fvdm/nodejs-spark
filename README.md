@@ -86,6 +86,19 @@ spark.devices (console.log);
 ```
 
 
+events ( onMessage, [onError], [onOpen] )
+------
+
+Listen for events on your entire account, included events from all your devices.
+
+See **device.events** below for details.
+
+
+```js
+spark.events (console.log);
+```
+
+
 device ( deviceId )
 -------------------
 
@@ -182,6 +195,52 @@ core.func ('led', 'on', console.log);
   return_value: 0
 }
 ```
+
+
+device.events ( onMessage, [onError], [onOpen] )
+-------------
+
+Listen to realtime events published from the core.
+
+```js
+function message (ev) {
+  console.log (ev.event);
+  console.log (ev.data);
+}
+
+function error (err) {
+  console.log ('Events error:');
+  console.log (err);
+}
+
+// Switch LED every 5 seconds
+core.events (message, error, function () {
+  setInterval (function () {
+    core.func ('switchLED');
+  }, 5000);
+});
+```
+
+
+#### Output
+
+```js
+{
+  type: 'message',
+  event: 'LED off',
+  data: 
+   {
+     data: 'From 1',
+     ttl: '10',
+     published_at: '2015-06-25T10:39:03.521Z',
+     coreid: 'abc123'
+   },
+  lastEventId: '',
+  origin: 'https://api.particle.io'
+}
+```
+
+> Hint: when you publish JSON data (string) from your device it will be decoded too.
 
 
 Example
