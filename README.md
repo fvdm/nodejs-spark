@@ -1,7 +1,11 @@
 sparkcloud
 ==========
 
-Read and control your Spark Core with node.js using the Spark Cloud API.
+Read and control your Spark Core with node.js using the Particle Cloud API.
+
+* [Particle](http://particle.io)
+* [API documentation](http://docs.particle.io/photon/api/)
+* [node.js](http://nodejs.org)
 
 
 Installation
@@ -9,19 +13,21 @@ Installation
 
 Stable: `npm install sparkcloud`
 
-Develop: `npm install fvdm/nodejs-spark`
+Develop: `npm install fvdm/nodejs-spark#develop`
 
 
-Initial setup
+Configuration
 -------------
 
-When you load the module into your script you must provide the `access_token` from your account settings.
+When you load the module into your script you must provide
+the `access_token` from your account settings.
 
 ```js
 var spark = require ('sparkcloud') ('your_access_token');
 ```
 
-Optionally you can override the default HTTP request timeout of 10 seconds, in milliseconds:
+Optionally you can override the default HTTP request timeout of
+10 seconds, in milliseconds:
 
 ```js
 // set timeout to 30 seconds
@@ -32,7 +38,9 @@ var spark = require ('sparkcloud') ('your_access_token', 30000);
 Callback & errors
 -----------------
 
-The last parameter of each method must be the callback _function_. This is the only way to receive results as the functions themselves don't return anything.
+The last parameter of each method must be the callback _function_.
+This is the only way to receive results as the functions themselves
+don't return anything.
 
 ```js
 function myCallback (err, data) {
@@ -44,19 +52,17 @@ function myCallback (err, data) {
 }
 ```
 
-The first parameter `err` is `null` when all went fine, otherwise it is an `instanceof Error`. Depending on the kind of error it may have additional properties to further explain the problem. In case of an error `data` is usually `null`.
+The first parameter `err` is _null_ when all went fine, otherwise it
+is an `instanceof Error`. Depending on the kind of error it may have
+additional properties to further explain the problem.
 
 
 ### Errors
 
-message         | description
-----------------|------------
-request failed  | The HTTPS request had an error, see err.error.
-request timeout | The HTTPS request took too long.
-request dropped | The remote host disconnected too early, no data processed.
-api invalid     | The API returned unreadable data.
-api error       | The API returned an error, see err.code, err.error and err.error_description.
-action failed   | A method specific error occured, it returned the code -1.
+message         | description              | additional
+:---------------|:-------------------------|:-------------
+request failed  | The request had an error | `err.error`
+api error       | API returned an error    | `err.code`, `err.error`, `err.error_description`
 
 
 devices ( callback )
@@ -69,10 +75,14 @@ spark.devices (console.log);
 ```
 
 ```js
-[ { id: '123456789',
+[
+  {
+    id: '123456789',
     name: 'myCore',
     last_app: null,
-    connected: true } ]
+    connected: true
+  }
+]
 ```
 
 
@@ -110,10 +120,22 @@ core.info (console.log);
 ```
 
 ```js
-{ id: '123456789',
-  name: 'myCore',
-  variables: { ledState: 'int32' },
-  functions: [ 'led' ] }
+{
+  id: 'abc123',
+  name: 'Spark Core',
+  connected: true,
+  variables:
+    {
+      ledState: 'int32'
+    },
+  functions:
+    [
+      'led'
+    ],
+  cc3000_patch_version: '1.28',
+  product_id: 0,
+  last_heard: '2015-06-25T06:19:18.824Z'
+}
 ```
 
 
@@ -123,25 +145,23 @@ device.variable ( varName, callback )
 Read a variable from the core.
 
 ```js
-core.variable ('light', console.log);
+core.variable ('ledState', console.log);
 ```
 
 ```js
-{ cmd: 'VarReturn',
-  name: 'light',
-  TEMPORARY_allTypes: 
-   { string: '\u0000\u0000\u0001�',
-     uint32: 478,
-     number: 478,
-     double: null,
-     float: 6.6982066594726256e-43,
-     raw: '\u0000\u0000\u0001�' },
-  result: 478,
-  coreInfo: 
-   { last_app: '',
-     last_heard: '2014-01-11T01:55:15.241Z',
-     connected: true,
-     deviceID: '123456789' } }
+{
+  cmd: 'VarReturn',
+  name: 'ledState',
+  result: 0,
+  coreInfo:
+    {
+      last_app: '',
+      last_heard: '2015-06-25T06:17:48.022Z',
+      connected: true,
+      last_handshake_at: '2015-06-25T06:00:24.099Z',
+      deviceID: 'abc123'
+    }
+}
 ```
 
 
@@ -151,22 +171,24 @@ device.func ( functionName, [param], callback )
 Run a function on the core. Optionally include one parameter.
 
 ```js
-core.func ('switchLight', '1', console.log);
+core.func ('led', 'on', console.log);
 ```
 
 ```js
-{ id: '123456789',
-  name: 'myCore',
-  last_app: null,
+{
+  id: 'abc123',
+  last_app: '',
   connected: true,
-  return_value: 1 }
+  return_value: 0
+}
 ```
 
 
 Example
 -------
 
-If you send the following code to you Spark core, the javascript example should work fine.
+If you send the following code to you Spark core,
+the javascript example should work fine.
 
 
 ### Spark code
@@ -204,14 +226,15 @@ core.func ('led', console.log);
 core.func ('led', 'on', console.log);
 ```
 
-Each time you run this script the **blue LED** next to the big RGB LED should switch on or off.
+Each time you run this script the **blue LED** next to the big RGB LED
+should switch on or off.
 
 
 Enjoy!
 
 
-Unlicense (Public Domain)
--------------------------
+Unlicense
+---------
 
 This is free and unencumbered software released into the public domain.
 
