@@ -58,6 +58,18 @@ app.device = function (device) {
   };
 };
 
+// Claim device
+app.claimDevice = function (deviceId, cb) {
+  talk ({
+    method: 'POST',
+    path: 'devices',
+    query: {
+      id: deviceId
+    },
+    callback: cb
+  });
+};
+
 // List or generate access_token
 app.accessToken = {};
 
