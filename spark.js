@@ -112,27 +112,33 @@ app.accessToken.delete = function (token, cb) {
 function talk (props) {
   // process response
   function doResponse (err, res) {
-    if (err) { return cb (err); }
     var data = null;
     var error = null;
 
-    try {
-      data = JSON.parse (res.body);
-    }
-    catch (e) {
-      error = new Error ('invalid response');
-      error.error = e;
+    if (err) {
+      error = new Error ('request failed');
+      error.error = err;
     }
 
-    if (res.statusCode !== 200 && data && data.code) {
-      error = new Error ('api error');
-      error.code = data.code;
-      error.error = data.error;
-      error.error_description = data.error_description;
-    }
+    if (!err) {
+      try {
+        data = JSON.parse (res.body);
+      }
+      catch (e) {
+        error = new Error ('invalid response');
+        error.error = e;
+      }
   
-    if (data.return_value && data.return_value === -1) {
-      error = new Error ('action failed');
+      if (res.statusCode !== 200 && data && data.code) {
+        error = new Error ('api error');
+        error.code = data.code;
+        error.error = data.error;
+        error.error_description = data.error_description;
+      }
+    
+      if (data.return_value && data.return_value === -1) {
+        error = new Error ('action failed');
+      }
     }
 
     if (typeof props.callback === 'function') {
