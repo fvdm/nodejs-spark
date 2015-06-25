@@ -176,16 +176,17 @@ int LED = D7;
 int State = 0;
 
 void setup() {
-    pinMode(LED, OUTPUT);
-    Spark.function("led", switchLED);
-    Spark.variable("ledState", &State, INT);
+  pinMode (LED, OUTPUT);
+  Spark.function ("led", switchLED);
+  Spark.variable ("ledState", &State, INT);
 }
 
-void loop() {}
-
-int switchLED(String args) {
-    digitalWrite(LED, State == 1 ? LOW : HIGH);
-    return State = State == 1 ? 0 : 1;
+int switchLED (String args) {
+  if (args.length () >= 1) {
+    State = args == "on" ? 0 : 1;
+  }
+  digitalWrite (LED, State == 1 ? LOW : HIGH);
+  return State = State == 1 ? 0 : 1;
 }
 ```
 
@@ -196,7 +197,11 @@ int switchLED(String args) {
 var spark = require ('sparkcloud') ('your_access_token');
 var core = spark.device ('123456789');
 
+// just switch on/off
 core.func ('led', console.log);
+
+// force on
+core.funct ('led', 'on', console.log);
 ```
 
 Each time you run this script the **blue LED** next to the big RGB LED should switch on or off.
