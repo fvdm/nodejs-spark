@@ -24,6 +24,14 @@
   "engines": {
     "node":               "*"
   },
-  "keywords":             ["spark", "spark.io", "sparkcore", "sparkcloud", "api"],
+  "keywords": [
+    "spark",
+    "spark.io",
+    "sparkcore",
+    "sparkcloud",
+    "particle",
+    "particle.io",
+    "api"
+  ],
   "license":              "Unlicense"
 }
