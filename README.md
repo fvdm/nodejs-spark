@@ -3,9 +3,9 @@ sparkcloud
 
 Read and control your Spark Core with node.js using the Particle Cloud API.
 
-* [Particle](http://particle.io)
+* [Particle](https://www.particle.io)
 * [API documentation](http://docs.particle.io/photon/api/)
-* [node.js](http://nodejs.org)
+* [node.js](https://nodejs.org)
 
 
 Installation
