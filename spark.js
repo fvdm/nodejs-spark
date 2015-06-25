@@ -100,6 +100,21 @@ app.events = function (cbMessage, cbError, cbOpen) {
   }
 };
 
+// Publish event to all devices
+app.publishEvent = function (name, data, priv, ttl, cb) {
+  talk ({
+    method: 'POST',
+    path: 'devices/events',
+    query: {
+      name: name,
+      data: data || '',
+      private: priv ? 'true' : 'false',
+      ttl: ttl || 60,
+      callback: cb
+    }
+  });
+};
+
 // List or generate access_token
 app.accessToken = {};
 
