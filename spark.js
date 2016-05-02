@@ -279,8 +279,10 @@ app.accessToken.list = function (callback) {
 };
 
 app.accessToken.generate = function (cb) {
+  var vars;
+
   if (auth.username && auth.password) {
-    var vars = {
+    vars = {
       grant_type: 'password',
       username: auth.username,
       password: auth.password
