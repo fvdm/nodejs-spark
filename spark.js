@@ -30,30 +30,36 @@ function doResponse (err, res, props) {
   var data = null;
   var error = null;
 
+  var callback = props.callback || function () {};
+
   if (err) {
     error = new Error ('request failed');
     error.error = err;
+    callback (error);
+    return;
   }
 
-  if (!err) {
-    try {
-      data = JSON.parse (res.body);
-    } catch (e) {
-      error = new Error ('invalid response');
-      error.error = e;
-    }
-
-    if (res.statusCode !== 200 && data && data.code) {
-      error = new Error ('api error');
-      error.code = data.code;
-      error.error = data.error;
-      error.error_description = data.error_description;
-    }
+  try {
+    data = JSON.parse (res.body);
+  } catch (e) {
+    error = new Error ('invalid response');
+    error.statusCode = res.statusCode;
+    error.error = e;
+    callback (error);
+    return;
   }
 
-  if (typeof props.callback === 'function') {
-    props.callback (error, data);
+  if (data.error) {
+    error = new Error ('api error');
+    error.statusCode = res.statusCode;
+    error.code = data.code || null;
+    error.error = data.error;
+    error.error_description = data.error_description;
+    callback (error);
+    return;
   }
+
+  callback (null, data);
 }
 
 
