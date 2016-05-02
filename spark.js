@@ -221,17 +221,23 @@ function doResponse (err, res, props) {
   }
 }
 
-// Communicate
-// method      GET POST PUT DELETE    GET
-// path        method path            /
-// query       query fields           {}
-// body        body fields or data
-// callback    function( err, data )
-// auth        use {username: 'john', password: 'doe'}
-// contentType change Content-Type    !GET: application/x-www-form-urlencoded
-// userAgent   change User-Agent
-// headers     custom headers         {}
-// timeout     override timeout ms    10000
+
+/**
+ * Communicate
+ *
+ * @param props {object}
+ * @param [props.method = GET] {string} - HTTP method
+ * @param [props.path = /] {string} - Request path
+ * @param [props.query] {object}
+ * @param [props.body] {mixed}
+ * @param [props.callback] {function}
+ * @param [props.auth] {object}
+ * @param [props.contentType] {string}
+ * @param [props.userAgent] {string}
+ * @param [props.headers] {object}
+ * @param [props.timeout] = 10000] {number}
+ * @returns {void}
+ */
 
 function talk (props) {
   var options = {
@@ -270,7 +276,15 @@ function talk (props) {
   });
 }
 
-// Fix events - it is impossible to overwrite ev.data without the for..loop
+
+/**
+ * Fix events
+ * it is impossible to overwrite ev.data without the for..loop
+ *
+ * @param ev {object} - Event object
+ * @returns {object}
+ */
+
 function fixEvent (ev) {
   var ev2 = {};
   var key;
