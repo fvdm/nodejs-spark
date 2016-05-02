@@ -69,7 +69,7 @@ function doResponse (err, res, props) {
  * @param [props.query] {object}
  * @param [props.body] {mixed}
  * @param [props.callback] {function}
- * @param [props.auth] {object}
+ * @param [props.auth] {boolean}
  * @param [props.contentType] {string}
  * @param [props.userAgent] {string}
  * @param [props.headers] {object}
