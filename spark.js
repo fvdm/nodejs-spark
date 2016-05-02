@@ -174,7 +174,7 @@ app.device = function (device) {
 
       if (typeof arg === 'function') {
         cb = arg;
-      } else if (typeof arg === 'string' || typeof arg === 'numeric') {
+      } else if (typeof arg === 'string' || typeof arg === 'number') {
         vars = {
           args: arg };
       }
