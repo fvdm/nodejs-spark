@@ -11,14 +11,11 @@ License:       Unlicense (Public Domain)
 
 var http = require ('httpreq');
 var EventSource = require ('eventsource');
+var app = {};
 
 // Default settings
-var app = {
-  timeout: 10000
-};
-
-// Security details must not be public
-var auth = {
+var config = {
+  timeout: 10000,
   username: null,
   password: null,
   access_token: null,
@@ -90,19 +87,19 @@ function talk (props) {
     headers: {
       'User-Agent': props.userAgent || 'spark.js (https://github.com/fvdm/nodejs-spark)'
     },
-    timeout: props.timeout || app.timeout
+    timeout: props.timeout || config.timeout
   };
 
   // http basic auth
-  if (props.callback && props.auth && (!auth.username || !auth.password)) {
+  if (props.callback && props.auth && (!config.username || !config.password)) {
     props.callback (new Error ('no credentials'));
     return;
   }
 
   if (props.auth) {
-    options.auth = auth.username + ':' + auth.password;
+    options.auth = config.username + ':' + config.password;
   } else {
-    options.headers.Authorization = 'Bearer ' + auth.access_token;
+    options.headers.Authorization = 'Bearer ' + config.access_token;
   }
 
   // override headers
@@ -198,7 +195,7 @@ app.device = function (device) {
         'https://api.particle.io/v1/devices/' + device + '/events',
         {
           headers: {
-            Authorization: 'Bearer ' + auth.access_token
+            Authorization: 'Bearer ' + config.access_token
           }
         }
       );
@@ -238,7 +235,7 @@ app.events = function (cbMessage, cbError, cbOpen) {
     'https://api.particle.io/v1/devices/events',
     {
       headers: {
-        Authorization: 'Bearer ' + auth.access_token
+        Authorization: 'Bearer ' + config.access_token
       }
     }
   );
@@ -287,11 +284,11 @@ app.accessToken.list = function (callback) {
 app.accessToken.generate = function (cb) {
   var vars;
 
-  if (auth.username && auth.password) {
+  if (config.username && config.password) {
     vars = {
       grant_type: 'password',
-      username: auth.username,
-      password: auth.password
+      username: config.username,
+      password: config.password
     };
 
     talk ({
@@ -320,21 +317,27 @@ app.accessToken.delete = function (token, cb) {
 // export
 // either ( 'access_token_string', [1000] )
 // or ( {username: 'john', password: 'doe'}, [1000] )
-module.exports = function (access_token, timeout) {
-  if (typeof accessToken === 'string') {
-    auth.access_token = access_token;
-    app.timeout = timeout || app.timeout;
+module.exports = function (conf, timeout) {
+  if (typeof conf === 'string') {
+    config.access_token = conf;
+    config.timeout = timeout || config.timeout;
     return app;
   }
 
-  app.timeout = access_token.timeout || timeout || app.timeout;
-  auth.username = access_token.username;
-  auth.password = access_token.password;
+  config.timeout = conf.timeout || timeout || config.timeout;
+
+  if (conf.access_token) {
+    config.access_token = conf.access_token;
+    return app;
+  }
+
+  config.username = conf.username || null;
+  config.password = conf.password || null;
 
   app.accessToken.generate (function (err, token) {
     if (!err) {
-      auth.access_token = token.access_token;
-      auth.access_token_expires = token.expires_in;
+      config.access_token = token.access_token;
+      config.access_token_expires = token.expires_in;
     }
   });
 
