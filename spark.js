@@ -99,8 +99,8 @@ function talk (props) {
   }
 
   // override headers
-  if (!props.headers ['User-Agent']) {
-    props.headers ['User-Agent'] = 'spark.js (https://github.com/fvdm/nodejs-spark)';
+  if (!options.headers ['User-Agent']) {
+    options.headers ['User-Agent'] = 'spark.js (https://github.com/fvdm/nodejs-spark)';
   }
 
   // run
