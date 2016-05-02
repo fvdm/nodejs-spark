@@ -71,22 +71,18 @@ function doResponse (err, res, props) {
  * @param [props.callback] {function}
  * @param [props.auth] {boolean}
  * @param [props.contentType] {string}
- * @param [props.userAgent] {string}
  * @param [props.headers] {object}
  * @param [props.timeout] = 10000] {number}
  * @returns {void}
  */
 
 function talk (props) {
-  var key;
   var options = {
     url: 'https://api.particle.io/v1/' + props.path,
     method: props.method || 'GET',
     parameters: props.query || {},
     body: props.body || null,
-    headers: {
-      'User-Agent': props.userAgent || 'spark.js (https://github.com/fvdm/nodejs-spark)'
-    },
+    headers: props.headers || {},
     timeout: props.timeout || config.timeout
   };
 
@@ -103,10 +99,8 @@ function talk (props) {
   }
 
   // override headers
-  if (typeof props.headers === 'object' && Object.keys (props.headers) .length >= 1) {
-    for (key in props.headers) {
-      options.headers [key] = props.headers [key];
-    }
+  if (!props.headers ['User-Agent']) {
+    props.headers ['User-Agent'] = 'spark.js (https://github.com/fvdm/nodejs-spark)';
   }
 
   // run
