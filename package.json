@@ -1,28 +1,30 @@
 {
   "author": {
-    "name":               "Franklin van de Meent",
-    "email":              "fr@nkl.in",
-    "url":                "https://frankl.in"
+    "name": "Franklin van de Meent",
+    "email": "fr@nkl.in",
+    "url": "https://frankl.in"
   },
-  "name":                 "sparkcloud",
-  "description":          "Read and control Spark.io cores with node.js",
-  "version":              "0.3.0",
+  "name": "sparkcloud",
+  "description": "Read and control Spark.io cores with node.js",
+  "version": "0.3.0",
   "repository": {
-    "type":               "git",
-    "url":                "git://github.com/fvdm/nodejs-spark.git"
+    "type": "git",
+    "url": "git://github.com/fvdm/nodejs-spark.git"
   },
   "bugs": {
-    "url":                "https://github.com/fvdm/nodejs-spark/issues"
+    "url": "https://github.com/fvdm/nodejs-spark/issues"
   },
-  "main":                 "spark.js",
+  "main": "spark.js",
   "dependencies": {
-    "httpreq":            "0.4.x",
-    "eventsource":        "git://github.com/fvdm/eventsource-node.git#fvdm-patch-1"
+    "httpreq": "^0.4.22",
+    "eventsource": "git://github.com/fvdm/eventsource-node.git#fvdm-patch-1"
   },
-  "devDependencies":      {},
-  "optionalDependencies": {},
+  "devDependencies": {
+    "dotest": "^1.9.1",
+    "eslint": "^2.9.0"
+  },
   "engines": {
-    "node":               "*"
+    "node": ">=0.12"
   },
   "keywords": [
     "spark",
@@ -33,5 +35,5 @@
     "particle.io",
     "api"
   ],
-  "license":              "Unlicense"
+  "license": "Unlicense"
 }
