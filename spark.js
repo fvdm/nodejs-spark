@@ -311,19 +311,21 @@ function fixEvent (ev) {
 // or ( {username: 'john', password: 'doe'}, [1000] )
 module.exports = function (access_token, timeout) {
   if (typeof accessToken === 'string') {
-    auth.username = access_token.username;
-    auth.password = access_token.password;
-
-    app.accessToken.generate (function (err, token) {
-      if (!err) {
-        auth.access_token = token.access_token;
-        auth.access_token_expires = token.expires_in;
-      }
-    });
-  } else {
     auth.access_token = access_token;
+    app.timeout = timeout || app.timeout;
+    return app;
   }
 
-  app.timeout = timeout || app.timeout;
+  app.timeout = access_token.timeout || timeout || app.timeout;
+  auth.username = access_token.username;
+  auth.password = access_token.password;
+
+  app.accessToken.generate (function (err, token) {
+    if (!err) {
+      auth.access_token = token.access_token;
+      auth.access_token_expires = token.expires_in;
+    }
+  });
+
   return app;
 };
