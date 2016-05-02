@@ -42,7 +42,7 @@ dotest.add ('Error: invalid_token', function (test) {
   tmp.devices (function (err, data) {
     test ()
       .isError ('fail', 'err', err)
-      .isExactly ('fail', 'err.message', err && err.message)
+      .isExactly ('fail', 'err.message', err && err.message, 'api error')
       .isExactly ('fail', 'err.error', err && err.error, 'invalid_token')
       .isString ('fail', 'err.error_description', err && err.error_description)
       .isUndefined ('fail', 'data', data)
