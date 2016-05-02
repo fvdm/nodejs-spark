@@ -157,14 +157,14 @@ app.device = function (device) {
   return {
     info: function (cb) {
       talk ({
-        path: 'devices/'+ device,
+        path: 'devices/' + device,
         callback: cb
       });
     },
 
     variable: function (variable, cb) {
       talk ({
-        path: 'devices/'+ device +'/'+ variable,
+        path: 'devices/' + device + '/' + variable,
         callback: cb
       });
     },
@@ -181,7 +181,7 @@ app.device = function (device) {
 
       talk ({
         method: 'POST',
-        path: 'devices/'+ device +'/'+ func,
+        path: 'devices/' + device + '/' + func,
         query: vars,
         callback: cb
       });
@@ -189,10 +189,10 @@ app.device = function (device) {
 
     events: function (cbMessage, cbError, cbOpen) {
       var es = new EventSource (
-        'https://api.particle.io/v1/devices/'+ device +'/events',
+        'https://api.particle.io/v1/devices/' + device + '/events',
         {
           headers: {
-            Authorization: 'Bearer '+ auth.access_token
+            Authorization: 'Bearer ' + auth.access_token
           }
         }
       );
@@ -232,7 +232,7 @@ app.events = function (cbMessage, cbError, cbOpen) {
     'https://api.particle.io/v1/devices/events',
     {
       headers: {
-        Authorization: 'Bearer '+ auth.access_token
+        Authorization: 'Bearer ' + auth.access_token
       }
     }
   );
@@ -303,7 +303,7 @@ app.accessToken.generate = function (cb) {
 app.accessToken.delete = function (token, cb) {
   talk ({
     method: 'DELETE',
-    path: 'access_tokens/'+ token,
+    path: 'access_tokens/' + token,
     auth: true,
     callback: cb
   });
