@@ -190,6 +190,37 @@ app.accessToken.delete = function (token, cb) {
   });
 };
 
+// process response
+function doResponse (err, res, props) {
+  var data = null;
+  var error = null;
+
+  if (err) {
+    error = new Error ('request failed');
+    error.error = err;
+  }
+
+  if (!err) {
+    try {
+      data = JSON.parse (res.body);
+    } catch (e) {
+      error = new Error ('invalid response');
+      error.error = e;
+    }
+
+    if (res.statusCode !== 200 && data && data.code) {
+      error = new Error ('api error');
+      error.code = data.code;
+      error.error = data.error;
+      error.error_description = data.error_description;
+    }
+  }
+
+  if (typeof props.callback === 'function') {
+    props.callback (error, data);
+  }
+}
+
 // Communicate
 // method      GET POST PUT DELETE    GET
 // path        method path            /
@@ -203,40 +234,9 @@ app.accessToken.delete = function (token, cb) {
 // timeout     override timeout ms    10000
 
 function talk (props) {
-  // process response
-  function doResponse (err, res) {
-    var data = null;
-    var error = null;
-
-    if (err) {
-      error = new Error ('request failed');
-      error.error = err;
-    }
-
-    if (!err) {
-      try {
-        data = JSON.parse (res.body);
-      } catch (e) {
-        error = new Error ('invalid response');
-        error.error = e;
-      }
-  
-      if (res.statusCode !== 200 && data && data.code) {
-        error = new Error ('api error');
-        error.code = data.code;
-        error.error = data.error;
-        error.error_description = data.error_description;
-      }
-    }
-
-    if (typeof props.callback === 'function') {
-      props.callback (error, data);
-    }
-  }
-
-  // build request
-  var url = 'https://api.particle.io/v1/'+ props.path;
   var options = {
+    url: 'https://api.particle.io/v1/' + props.path,
+    method: props.method || 'GET',
     parameters: props.query || {},
     body: props.body || null,
     headers: {
@@ -265,21 +265,9 @@ function talk (props) {
   }
 
   // run
-  switch (props.method) {
-    case 'POST':
-      http.post (url, options, doResponse);
-      break;
-    case 'PUT':
-      http.put (url, options, doResponse);
-      break;
-    case 'DELETE':
-      http.delete (url, options, doResponse);
-      break;
-    case 'GET':
-    default:
-      http.get (url, options, doResponse);
-      break;
-  }
+  http.doRequest (options, function (err, res) {
+    doResponse (err, res, props);
+  });
 }
 
 // Fix events - it is impossible to overwrite ev.data without the for..loop
