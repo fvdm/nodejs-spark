@@ -23,6 +23,9 @@
     "dotest": "^1.9.1",
     "eslint": "^2.9.0"
   },
+  "scripts": {
+    "test": "st=0; eslint . || st=1; node test.js || st=1; exit $st"
+  },
   "engines": {
     "node": ">=0.12"
   },
