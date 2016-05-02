@@ -36,6 +36,17 @@ dotest.add ('Module', function (test) {
 });
 
 
+dotest.add ('Method .devices', function (test) {
+  spark.devices (function (err, data) {
+    test (err)
+      .isArray ('fail', 'data', data)
+      .isNotEmpty ('fail', 'data', data)
+      .isObject ('fail', 'data[0]', data && data [0])
+      .done ();
+  });
+});
+
+
 dotest.add ('Error: invalid_token', function (test) {
   var tmp = new app ('invalid_token', 10000);
 
@@ -46,17 +57,6 @@ dotest.add ('Error: invalid_token', function (test) {
       .isExactly ('fail', 'err.error', err && err.error, 'invalid_token')
       .isString ('fail', 'err.error_description', err && err.error_description)
       .isUndefined ('fail', 'data', data)
-      .done ();
-  });
-});
-
-
-dotest.add ('Method .devices', function (test) {
-  spark.devices (function (err, data) {
-    test (err)
-      .isArray ('fail', 'data', data)
-      .isNotEmpty ('fail', 'data', data)
-      .isObject ('fail', 'data[0]', data && data [0])
       .done ();
   });
 });
