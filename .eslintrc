@@ -12,7 +12,7 @@
     "brace-style": [2, "1tbs", {
       "allowSingleLine": true
     }],
-    "camelcase": [2, {
+    "camelcase": [1, {
       "properties": "never"
     }],
     "comma-spacing": [2, {
