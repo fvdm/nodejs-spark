@@ -27,26 +27,37 @@ var auth = {
 
 // List devices
 app.devices = function (cb) {
-  talk ({ path: 'devices', callback: cb });
+  talk ({
+    path: 'devices',
+    callback: cb
+  });
 };
 
 // One device
 app.device = function (device) {
   return {
     info: function (cb) {
-      talk ({ path: 'devices/'+ device, callback: cb });
+      talk ({
+        path: 'devices/'+ device,
+        callback: cb
+      });
     },
 
     variable: function (variable, cb) {
-      talk ({ path: 'devices/'+ device +'/'+ variable, callback: cb });
+      talk ({
+        path: 'devices/'+ device +'/'+ variable,
+        callback: cb
+      });
     },
 
     func: function (func, arg, cb) {
       var vars = null;
+
       if (typeof arg === 'function') {
         cb = arg;
       } else if (typeof arg === 'string' || typeof arg === 'numeric') {
-        vars = {args: arg};
+        vars = {
+          args: arg };
       }
 
       talk ({
@@ -60,10 +71,21 @@ app.device = function (device) {
     events: function (cbMessage, cbError, cbOpen) {
       var es = new EventSource (
         'https://api.particle.io/v1/devices/'+ device +'/events',
-        { headers: { Authorization: 'Bearer '+ auth.access_token }}
+        {
+          headers: {
+            Authorization: 'Bearer '+ auth.access_token
+          }
+        }
       );
-      if (cbOpen) { es.onopen = cbOpen; }
-      if (cbError) { es.onerror = cbError }
+
+      if (cbOpen) {
+        es.onopen = cbOpen;
+      }
+
+      if (cbError) {
+        es.onerror = cbError;
+      }
+
       if (cbMessage) {
         es.onmessage = function (ev) {
           cbMessage (fixEvent (ev));
@@ -89,10 +111,21 @@ app.claimDevice = function (deviceId, cb) {
 app.events = function (cbMessage, cbError, cbOpen) {
   var es = new EventSource (
     'https://api.particle.io/v1/devices/events',
-    { headers: { Authorization: 'Bearer '+ auth.access_token }}
+    {
+      headers: {
+        Authorization: 'Bearer '+ auth.access_token
+      }
+    }
   );
-  if (cbOpen) { es.onopen = cbOpen; }
-  if (cbError) { es.onerror = cbError }
+
+  if (cbOpen) {
+    es.onopen = cbOpen;
+  }
+
+  if (cbError) {
+    es.onerror = cbError;
+  }
+
   if (cbMessage) {
     es.onmessage = function (ev) {
       cbMessage (fixEvent (ev));
@@ -133,6 +166,7 @@ app.accessToken.generate = function (cb) {
       username: auth.username,
       password: auth.password
     };
+
     talk ({
       method: 'POST',
       path: 'oauth/token',
@@ -140,9 +174,11 @@ app.accessToken.generate = function (cb) {
       auth: true,
       callback: cb
     });
-  } else {
-    cb (new Error ('no credentials'));
+
+    return;
   }
+
+  cb (new Error ('no credentials'));
 };
 
 app.accessToken.delete = function (token, cb) {
@@ -180,8 +216,7 @@ function talk (props) {
     if (!err) {
       try {
         data = JSON.parse (res.body);
-      }
-      catch (e) {
+      } catch (e) {
         error = new Error ('invalid response');
         error.error = e;
       }
@@ -214,7 +249,9 @@ function talk (props) {
   if (props.auth && (!auth.username || !auth.password)) {
     doCallback (new Error ('no credentials'));
     return;
-  } else if (props.auth) {
+  }
+
+  if (props.auth) {
     options.auth = auth.username +':'+ auth.password;
   } else {
     options.headers.Authorization = 'Bearer '+ auth.access_token;
@@ -229,28 +266,43 @@ function talk (props) {
 
   // run
   switch (props.method) {
-    case 'POST': http.post (url, options, doResponse); break;
-    case 'PUT': http.put (url, options, doResponse); break;
-    case 'DELETE': http.delete (url, options, doResponse); break;
+    case 'POST':
+      http.post (url, options, doResponse);
+      break;
+    case 'PUT':
+      http.put (url, options, doResponse);
+      break;
+    case 'DELETE':
+      http.delete (url, options, doResponse);
+      break;
     case 'GET':
-    default: http.get (url, options, doResponse); break;
+    default:
+      http.get (url, options, doResponse);
+      break;
   }
 }
 
 // Fix events - it is impossible to overwrite ev.data without the for..loop
 function fixEvent (ev) {
   var ev2 = {};
-  for (var key in ev) {
+  var key;
+
+  for (key in ev) {
     ev2 [key] = ev [key];
   }
+
   try {
     ev2.data = JSON.parse (ev2.data);
+  } catch (e) {
+    // skip
   }
-  catch (e) {}
+
   try {
     ev2.data.data = JSON.parse (ev2.data.data);
+  } catch (e) {
+    // skip
   }
-  catch (e) {}
+
   return ev2;
 }
 
@@ -258,7 +310,7 @@ function fixEvent (ev) {
 // either ( 'access_token_string', [1000] )
 // or ( {username: 'john', password: 'doe'}, [1000] )
 module.exports = function (access_token, timeout) {
-  if (typeof access_token === 'object') {
+  if (typeof accessToken === 'string') {
     auth.username = access_token.username;
     auth.password = access_token.password;
 
