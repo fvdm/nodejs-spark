@@ -32,4 +32,19 @@ dotest.add ('Module', function (test) {
 });
 
 
+dotest.add ('Error: invalid_token', function (test) {
+  var tmp = new app ('invalid_token', 10000);
+
+  tmp.devices (function (err, data) {
+    test ()
+      .isError ('fail', 'err', err)
+      .isExactly ('fail', 'err.message', err && err.message)
+      .isExactly ('fail', 'err.error', err && err.error, 'invalid_token')
+      .isString ('fail', 'err.error_description', err && err.error_description)
+      .isUndefined ('fail', 'data', data)
+      .done ();
+  });
+});
+
+
 dotest.run ();
