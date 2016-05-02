@@ -25,6 +25,125 @@ var auth = {
   access_token_expires: null
 };
 
+// process response
+function doResponse (err, res, props) {
+  var data = null;
+  var error = null;
+
+  if (err) {
+    error = new Error ('request failed');
+    error.error = err;
+  }
+
+  if (!err) {
+    try {
+      data = JSON.parse (res.body);
+    } catch (e) {
+      error = new Error ('invalid response');
+      error.error = e;
+    }
+
+    if (res.statusCode !== 200 && data && data.code) {
+      error = new Error ('api error');
+      error.code = data.code;
+      error.error = data.error;
+      error.error_description = data.error_description;
+    }
+  }
+
+  if (typeof props.callback === 'function') {
+    props.callback (error, data);
+  }
+}
+
+
+/**
+ * Communicate
+ *
+ * @param props {object}
+ * @param [props.method = GET] {string} - HTTP method
+ * @param [props.path = /] {string} - Request path
+ * @param [props.query] {object}
+ * @param [props.body] {mixed}
+ * @param [props.callback] {function}
+ * @param [props.auth] {object}
+ * @param [props.contentType] {string}
+ * @param [props.userAgent] {string}
+ * @param [props.headers] {object}
+ * @param [props.timeout] = 10000] {number}
+ * @returns {void}
+ */
+
+function talk (props) {
+  var key;
+  var options = {
+    url: 'https://api.particle.io/v1/' + props.path,
+    method: props.method || 'GET',
+    parameters: props.query || {},
+    body: props.body || null,
+    headers: {
+      'User-Agent': props.userAgent || 'spark.js (https://github.com/fvdm/nodejs-spark)'
+    },
+    timeout: props.timeout || app.timeout
+  };
+
+  // http basic auth
+  if (props.callback && props.auth && (!auth.username || !auth.password)) {
+    props.callback (new Error ('no credentials'));
+    return;
+  }
+
+  if (props.auth) {
+    options.auth = auth.username + ':' + auth.password;
+  } else {
+    options.headers.Authorization = 'Bearer ' + auth.access_token;
+  }
+
+  // override headers
+  if (typeof props.headers === 'object' && Object.keys (props.headers) .length >= 1) {
+    for (key in props.headers) {
+      options.headers [key] = props.headers [key];
+    }
+  }
+
+  // run
+  http.doRequest (options, function (err, res) {
+    doResponse (err, res, props);
+  });
+}
+
+
+/**
+ * Fix events
+ * it is impossible to overwrite ev.data without the for..loop
+ *
+ * @param ev {object} - Event object
+ * @returns {object}
+ */
+
+function fixEvent (ev) {
+  var ev2 = {};
+  var key;
+
+  for (key in ev) {
+    ev2 [key] = ev [key];
+  }
+
+  try {
+    ev2.data = JSON.parse (ev2.data);
+  } catch (e) {
+    // skip
+  }
+
+  try {
+    ev2.data.data = JSON.parse (ev2.data.data);
+  } catch (e) {
+    // skip
+  }
+
+  return ev2;
+}
+
 // List devices
 app.devices = function (cb) {
   talk ({
@@ -189,124 +308,6 @@ app.accessToken.delete = function (token, cb) {
     callback: cb
   });
 };
-
-// process response
-function doResponse (err, res, props) {
-  var data = null;
-  var error = null;
-
-  if (err) {
-    error = new Error ('request failed');
-    error.error = err;
-  }
-
-  if (!err) {
-    try {
-      data = JSON.parse (res.body);
-    } catch (e) {
-      error = new Error ('invalid response');
-      error.error = e;
-    }
-
-    if (res.statusCode !== 200 && data && data.code) {
-      error = new Error ('api error');
-      error.code = data.code;
-      error.error = data.error;
-      error.error_description = data.error_description;
-    }
-  }
-
-  if (typeof props.callback === 'function') {
-    props.callback (error, data);
-  }
-}
-
-
-/**
- * Communicate
- *
- * @param props {object}
- * @param [props.method = GET] {string} - HTTP method
- * @param [props.path = /] {string} - Request path
- * @param [props.query] {object}
- * @param [props.body] {mixed}
- * @param [props.callback] {function}
- * @param [props.auth] {object}
- * @param [props.contentType] {string}
- * @param [props.userAgent] {string}
- * @param [props.headers] {object}
- * @param [props.timeout] = 10000] {number}
- * @returns {void}
- */
-
-function talk (props) {
-  var options = {
-    url: 'https://api.particle.io/v1/' + props.path,
-    method: props.method || 'GET',
-    parameters: props.query || {},
-    body: props.body || null,
-    headers: {
-      'User-Agent': props.userAgent || 'spark.js (https://github.com/fvdm/nodejs-spark)'
-    },
-    timeout: props.timeout || app.timeout
-  };
-
-  // http basic auth
-  if (props.auth && (!auth.username || !auth.password)) {
-    doCallback (new Error ('no credentials'));
-    return;
-  }
-
-  if (props.auth) {
-    options.auth = auth.username +':'+ auth.password;
-  } else {
-    options.headers.Authorization = 'Bearer '+ auth.access_token;
-  }
-
-  // override headers
-  if (typeof props.headers === 'object' && Object.keys (props.headers) .length >= 1) {
-    for (var key in props.headers) {
-      options.headers [key] = props.headers [key];
-    }
-  }
-
-  // run
-  http.doRequest (options, function (err, res) {
-    doResponse (err, res, props);
-  });
-}
-
-
-/**
- * Fix events
- * it is impossible to overwrite ev.data without the for..loop
- *
- * @param ev {object} - Event object
- * @returns {object}
- */
-
-function fixEvent (ev) {
-  var ev2 = {};
-  var key;
-
-  for (key in ev) {
-    ev2 [key] = ev [key];
-  }
-
-  try {
-    ev2.data = JSON.parse (ev2.data);
-  } catch (e) {
-    // skip
-  }
-
-  try {
-    ev2.data.data = JSON.parse (ev2.data.data);
-  } catch (e) {
-    // skip
-  }
-
-  return ev2;
-}
 
 // export
 // either ( 'access_token_string', [1000] )
