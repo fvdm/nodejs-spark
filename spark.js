@@ -80,8 +80,8 @@ function talk (props) {
   var options = {
     url: 'https://api.particle.io/v1/' + props.path,
     method: props.method || 'GET',
-    parameters: props.query || {},
-    body: props.body || null,
+    parameters: props.query,
+    body: props.body,
     headers: props.headers || {},
     timeout: props.timeout || config.timeout
   };
