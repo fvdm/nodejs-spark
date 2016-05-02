@@ -14,6 +14,8 @@ var deviceId = process.env.testDeviceId || null;
 var device = spark && spark.device (deviceId);
 
 dotest.add ('Module', function (test) {
+  var accTkn = spark && spark.accessToken;
+
   test ()
     .isFunction ('fail', 'exports', app)
     .isObject ('fail', 'interface', spark)
@@ -26,8 +28,10 @@ dotest.add ('Module', function (test) {
     .isFunction ('fail', '.claimDevice', spark && spark.claimDevice)
     .isFunction ('fail', '.events', spark && spark.events)
     .isFunction ('fail', '.publishEvent', spark && spark.publishEvent)
-    .isObject ('fail', '.accessToken', spark && spark.accessToken)
-    .isFunction ('fail', '.accessToken.list', spark && spark.accessToken && spark.accessToken.list)
+    .isObject ('fail', '.accessToken', accTkn)
+    .isFunction ('fail', '.accessToken.list', accTkn && accTkn.list)
+    .isFunction ('fail', '.accessToken.generate', accTkn && accTkn.generate)
+    .isFunction ('fail', '.accessToken.delete', accTkn && accTkn.delete)
     .done ();
 });
 
