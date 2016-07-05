@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "dotest": "^1.9.1",
-    "eslint": "^3.0.0"
+    "eslint": "^3.0.1"
   },
   "scripts": {
     "test": "st=0; eslint . || st=1; node test.js || st=1; exit $st"
