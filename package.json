@@ -20,11 +20,10 @@
     "eventsource": "git://github.com/fvdm/eventsource-node.git#fvdm-patch-1"
   },
   "devDependencies": {
-    "dotest": "^1.9.1",
-    "eslint": "^3.0.0"
+    "dotest": "^1.13.0"
   },
   "scripts": {
-    "test": "st=0; eslint . || st=1; node test.js || st=1; exit $st"
+    "test": "dotest"
   },
   "engines": {
     "node": ">=4.0.0"
