@@ -20,7 +20,7 @@
     "eventsource": "git://github.com/fvdm/eventsource-node.git#fvdm-patch-1"
   },
   "devDependencies": {
-    "dotest": "^1.13.0"
+    "dotest": "^2.0.0"
   },
   "scripts": {
     "test": "dotest"
